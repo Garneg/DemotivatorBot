@@ -94,7 +94,8 @@ namespace DemotivatorBot
                         {
                             await botClient.SendTextMessageAsync(
                                 chatId: message.Chat.Id,
-                                text: "Пришлите картинку с подписью, чтобы создать демотиватор!");
+                                text: "Пришлите картинку с подписью, чтобы создать демотиватор!"
+                                );
                         }
                         break;
                     
@@ -457,7 +458,7 @@ namespace DemotivatorBot
             }
 
         }
-
+         
         public static async void CallbackQueryReceived(object sender, CallbackQueryEventArgs callbackQueryEvent)
         {
             string content = callbackQueryEvent.CallbackQuery.Data;
@@ -468,6 +469,12 @@ namespace DemotivatorBot
                     await botClient.SendTextMessageAsync(
                         chatId: callbackQueryEvent.CallbackQuery.Message.Chat.Id,
                         text: Configuration.advantagesText
+                        );
+                    break;
+                case "help":
+                    await botClient.SendTextMessageAsync(
+                        chatId: callbackQueryEvent.CallbackQuery.Message.Chat.Id,
+                        text: Configuration.helpText
                         );
                     break;
             }

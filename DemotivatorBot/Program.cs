@@ -29,8 +29,6 @@ namespace DemotivatorBot
 
             Bot.StartReceiving();
             
-
-
             Console.WriteLine("Write a line to stop bot from receiving:");
 
             BotMethods.AddToQueue();
