@@ -5,7 +5,6 @@ using System.Threading;
 using System.IO;
 using System.Net;
 using System.Linq;
-using System.Collections.Generic;
 using Telegram.Bot.Types;
 using Telegram.Bot.Args;
 using Telegram.Bot;
@@ -36,14 +35,10 @@ namespace DemotivatorBot
         public static string topCaption;
         public static string bottomCaption;
         public static string jsonResponse = "";
-        public static int ch;
-        public static HttpWebRequest requestForFilePath;
-        public static HttpWebResponse responseForFilePath;
-        public static Stream responseStreamForFilePath;
         public static string filePath;
         public static FontCollection fontCollection = new FontCollection();
         public static FontFamily family = fontCollection.Install("C:/SavedPictures/Times.ttf");
-        public static async void MessageReceived(object sender, MessageEventArgs e)
+        public static void MessageReceived(object sender, MessageEventArgs e)
         {
 
             Message message = e.Message;
@@ -102,6 +97,7 @@ namespace DemotivatorBot
                     chatAction: ChatAction.UploadPhoto
                     );
                     PrepearePicture(message.ReplyToMessage.Photo, message.Text, botClient, message.Chat.Id);
+                    Console.WriteLine(message.Text);
                 }
 
             }
@@ -282,9 +278,24 @@ namespace DemotivatorBot
 
                 }
 
+                if (resultImage.Width > 2500 || resultImage.Height > 2500)
+                {
+                    int TooBigWidth = resultImage.Width;
+                    int TooBigHeight = resultImage.Height;
+                    int RelationSize = Width / Height;
+
+                    if (TooBigWidth > TooBigHeight)
+                    {
+                        resultImage.Mutate(x => x.Resize(2500, 2500 * RelationSize));
+                    }
+                    else
+                    {
+                        resultImage.Mutate(x => x.Resize(2000 * RelationSize, 2500));
+                    }
+                }
+                Console.WriteLine(resultImage.Width + "x" + resultImage.Height);
+
                 await resultImage.SaveAsPngAsync("DemotivatorBotResult.png");
-
-
 
             }
             else
@@ -325,6 +336,22 @@ namespace DemotivatorBot
 
                 SetImageToAnother(Image.Load<Rgba32>("RenderedImageSharpText.png"), ref resultImage, averagePoint, originalImage.Height + 10 + minimalPoint + (averagePoint / 2));
             
+                if (resultImage.Width > 2500 || resultImage.Height > 2500)
+                {
+                    int TooBigWidth = resultImage.Width;
+                    int TooBigHeight = resultImage.Height;
+                    int RelationSize = Width / Height;
+
+                    if (TooBigWidth > TooBigHeight)
+                    {
+                        resultImage.Mutate(x => x.Resize(2500, 2500 * RelationSize));
+                    }
+                    else
+                    {
+                        resultImage.Mutate(x => x.Resize(2500 * RelationSize, 2500));
+                    }
+                }
+                Console.WriteLine(resultImage.Width + "x" + resultImage.Height);
 
                 await resultImage.SaveAsPngAsync("DemotivatorBotResult.png");
 
