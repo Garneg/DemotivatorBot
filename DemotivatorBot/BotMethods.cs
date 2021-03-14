@@ -21,8 +21,6 @@ using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
 
 
-
-
 namespace DemotivatorBot
 {
     class BotMethods
@@ -34,7 +32,6 @@ namespace DemotivatorBot
         public static string caption;
         public static string topCaption;
         public static string bottomCaption;
-        public static string jsonResponse = "";
         public static string filePath;
         public static FontCollection fontCollection = new FontCollection();
         public static FontFamily family = fontCollection.Install("C:/SavedPictures/Times.ttf");
@@ -44,8 +41,6 @@ namespace DemotivatorBot
             Message message = e.Message;
 
             messagesQueue.Enqueue(message);
-
-            
 
         }
         public static async void MessageManipulations(TelegramBotClient botClient, Message message)
@@ -69,6 +64,12 @@ namespace DemotivatorBot
             {
                 switch (message.Text.Split(' ').First())
                 {
+                    case "/start":
+                        await botClient.SendTextMessageAsync(
+                            chatId: message.Chat.Id,
+                            text: Configuration.startText
+                            );
+                        break;
                     case "/help":
                         await botClient.SendTextMessageAsync
                             (
@@ -84,8 +85,13 @@ namespace DemotivatorBot
                             text: Configuration.infoText
                             );
                         break;
-                    case "/text":
-                        
+                    default:
+                        if (message.ReplyToMessage == null)
+                        {
+                            await botClient.SendTextMessageAsync(
+                                chatId: message.Chat.Id,
+                                text: "Пришлите картинку с подписью, чтобы создать демотиватор!");
+                        }
                         break;
                     
                 }
@@ -115,8 +121,6 @@ namespace DemotivatorBot
         public static async void PrepearePicture(PhotoSize[] photoSize, string messageCaption, TelegramBotClient botClient, ChatId messageChatId)
         {
             
-
-
             FileStream photoStream = new FileStream("newphotos.png", FileMode.Create);
 
             Telegram.Bot.Types.File fl = await botClient.GetFileAsync(photoSize[photoSize.Length - 1].FileId);
@@ -129,26 +133,24 @@ namespace DemotivatorBot
 
             Image<Rgba32> img = Image.Load<Rgba32>("newphotos.png");
 
-            //img.Mutate(x => x.Resize(img.Width * Configuration.ResizerValue, img.Height * Configuration.ResizerValue));
-
             Console.WriteLine("Size before Mutate: Width - {0}, Height - {1}", img.Width, img.Height);
 
-            if (img.Width < 400 || img.Height < 400)
+            if (img.Width < 500 || img.Height < 500)
             {
-                int w = 512 - img.Width;
-                int h = 512 - img.Height;
-                int bigger = h;
-                if (w > h) bigger = w;
-                img.Mutate(x => x.Resize(img.Width + bigger, img.Height + bigger));
-            }
-            else
-            {
-                img.Mutate(x => x.Resize((int)(img.Width * 1.5), (int)(img.Height * 1.5)));
+                int w = img.Width;
+                int h = img.Height;
+                int relationSize = w / h;
+                if (w < h)
+                {
+                    img.Mutate(z => z.Resize(500, 500 * relationSize));
+                }
+                else
+                {
+                    img.Mutate(j => j.Resize(500 * relationSize, 500));
+                }
+               
             }
             Console.WriteLine("Size after Mutate: Width - {0}, Height - {1}", img.Width, img.Height);
-
-
-            //img.Mutate(x => x.Resize(512, 512));
 
             img.SaveAsPng("newphotos.png");
 
@@ -182,11 +184,6 @@ namespace DemotivatorBot
             CreateDemotivator(topCaption, bottomCaption, numOfCaptions);
 
             Console.WriteLine("Demotivator created!");
-
-            filePath = "";
-            jsonResponse = "";
-
-
 
             FileStream fileStream = new FileStream("DemotivatorBotResult.png", FileMode.Open);
 
@@ -223,11 +220,7 @@ namespace DemotivatorBot
                 Width = originalImage.Width + (averagePoint * 2);
                 Height = originalImage.Height + minimalPoint + (averagePoint * 3);
 
-                if (Width < 100 || Height < 100)
-                {
-                    Width = 200;
-                    Height = 200;
-                }
+                
 
                 Image<Rgba32> resultImage = new Image<Rgba32>(Width, Height);
 
