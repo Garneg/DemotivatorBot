@@ -22,7 +22,10 @@ namespace DemotivatorBot
 
             Bot = new TelegramBotClient(Configuration.BotToken);
 
+            BotMethods.botClient = Bot;
+
             Bot.OnMessage += BotMethods.MessageReceived;
+            Bot.OnCallbackQuery += BotMethods.CallbackQueryReceived;
 
             Bot.StartReceiving();
             
@@ -30,7 +33,7 @@ namespace DemotivatorBot
 
             Console.WriteLine("Write a line to stop bot from receiving:");
 
-            BotMethods.AddToQueue(Bot);
+            BotMethods.AddToQueue();
 
             Console.ReadLine();
 

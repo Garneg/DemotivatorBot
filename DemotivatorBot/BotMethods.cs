@@ -9,6 +9,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Args;
 using Telegram.Bot;
 using Telegram.Bot.Types.InputFiles;
+using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Requests;
 using Telegram.Bot.Types.InlineQueryResults;
 using Telegram.Bot.Types.Enums;
@@ -35,6 +36,7 @@ namespace DemotivatorBot
         public static string filePath;
         public static FontCollection fontCollection = new FontCollection();
         public static FontFamily family = fontCollection.Install("C:/SavedPictures/Times.ttf");
+        public static TelegramBotClient botClient;
         public static void MessageReceived(object sender, MessageEventArgs e)
         {
 
@@ -43,7 +45,7 @@ namespace DemotivatorBot
             messagesQueue.Enqueue(message);
 
         }
-        public static async void MessageManipulations(TelegramBotClient botClient, Message message)
+        public static async void MessageManipulations(Message message)
         {
 
             if (message.ReplyToMessage != null)
@@ -67,8 +69,10 @@ namespace DemotivatorBot
                     case "/start":
                         await botClient.SendTextMessageAsync(
                             chatId: message.Chat.Id,
-                            text: Configuration.startText
+                            text: Configuration.startText,
+                            replyMarkup: Configuration.startInlineKeyboard
                             );
+                        
                         break;
                     case "/help":
                         await botClient.SendTextMessageAsync
@@ -255,19 +259,19 @@ namespace DemotivatorBot
 
                 if (bottomCaption == null)
                 {
-                    RenderText(topCaption, originalImage.Width, minimalPoint);
+                    RenderText(topCaption, originalImage.Width + averagePoint, minimalPoint);
 
-                    SetImageToAnother(Image.Load<Rgba32>("RenderedImageSharpText.png"), ref resultImage, averagePoint, originalImage.Height + 10 + minimalPoint + (averagePoint / 2));
+                    SetImageToAnother(Image.Load<Rgba32>("RenderedImageSharpText.png"), ref resultImage, averagePoint / 2, originalImage.Height + 10 + minimalPoint + (averagePoint / 2));
                 }
                 if (bottomCaption != null && topCaption != null)
                 {
-                    RenderText(topCaption, originalImage.Width, minimalPoint);
+                    RenderText(topCaption, originalImage.Width + averagePoint, minimalPoint);
 
-                    SetImageToAnother(Image.Load<Rgba32>("RenderedImageSharpText.png"), ref resultImage, averagePoint, originalImage.Height + 10 + minimalPoint + (averagePoint / 2));
+                    SetImageToAnother(Image.Load<Rgba32>("RenderedImageSharpText.png"), ref resultImage, averagePoint / 2, originalImage.Height + 10 + minimalPoint + (averagePoint / 2));
 
-                    RenderText(bottomCaption, originalImage.Width, (int)(minimalPoint * 0.75));
+                    RenderText(bottomCaption, originalImage.Width + averagePoint, (int)(minimalPoint * 0.75));
 
-                    SetImageToAnother(Image.Load<Rgba32>("RenderedImageSharpText.png"), ref resultImage, averagePoint, originalImage.Height + 10 + minimalPoint + (int)(averagePoint * 1.5));
+                    SetImageToAnother(Image.Load<Rgba32>("RenderedImageSharpText.png"), ref resultImage, averagePoint / 2, originalImage.Height + 10 + minimalPoint + (int)(averagePoint * 1.5));
 
                 }
 
@@ -433,7 +437,7 @@ namespace DemotivatorBot
             
         }
 
-        public static void AddToQueue(TelegramBotClient botClient)
+        public static void AddToQueue()
         {
             
             Message message = new Message();
@@ -445,13 +449,28 @@ namespace DemotivatorBot
                     if (hasMessage == true)
                     {
                         State = 1;
-                        MessageManipulations(botClient, message);
+                        MessageManipulations(message);
                         
                         
                     }
                 }
             }
 
+        }
+
+        public static async void CallbackQueryReceived(object sender, CallbackQueryEventArgs callbackQueryEvent)
+        {
+            string content = callbackQueryEvent.CallbackQuery.Data;
+
+            switch (content)
+            {
+                case "advantages":
+                    botClient.SendTextMessageAsync(
+                        chatId: callbackQueryEvent.CallbackQuery.Message.Chat.Id,
+                        text: 
+                        );
+                    break;
+            }
         }
 
     }

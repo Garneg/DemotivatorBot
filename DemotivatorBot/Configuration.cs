@@ -4,6 +4,7 @@ using System.Text;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.Passport;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace DemotivatorBot
 {
@@ -47,6 +48,16 @@ namespace DemotivatorBot
             get => info;
         }
 
+        public static InlineKeyboardMarkup startInlineKeyboard = new InlineKeyboardMarkup(new []
+        {
+
+            InlineKeyboardButton.WithCallbackData("1️⃣", "advantages"),
+
+            InlineKeyboardButton.WithCallbackData("2️⃣", "help")
+
+        });
+
+        public static readonly string advantagesText = "Мои преимущества:";
 
     }
 }
