@@ -28,6 +28,7 @@ namespace DemotivatorBot
 {
     class BotMethods
     {
+        public static bool isReply;
         public static int State = 0;
         public static Queue<Message> messagesQueue = new Queue<Message>();
         public static int numOfCaptions = 2;
@@ -53,8 +54,20 @@ namespace DemotivatorBot
 
         }
         public static async void MessageManipulations(TelegramBotClient botClient, Message message)
-        { 
+        {
 
+            if (message.ReplyToMessage != null)
+            {
+
+                if (message.ReplyToMessage.Photo != null)
+                {
+                    isReply = true;
+                }
+                else
+                {
+                    isReply = false;
+                }
+            }
             
 
             if (message.Type == MessageType.Text && message.Text != null)
@@ -82,111 +95,122 @@ namespace DemotivatorBot
                     
                 }
                 
+                if (isReply == true)
+                {
+                    await botClient.SendChatActionAsync(
+                    chatId: message.Chat.Id,
+                    chatAction: ChatAction.UploadPhoto
+                    );
+                    PrepearePicture(message.ReplyToMessage.Photo, message.Text, botClient, message.Chat.Id);
+                }
 
             }
 
             if (message.Type == MessageType.Photo)
             {
-
                 await botClient.SendChatActionAsync(
                     chatId: message.Chat.Id,
                     chatAction: ChatAction.UploadPhoto
                     );
-
-                
-                FileStream photoStream = new FileStream("newphotos.png", FileMode.Create);
-
-                Telegram.Bot.Types.File fl = await botClient.GetFileAsync(message.Photo[message.Photo.Length-1].FileId);
-
-                await botClient.DownloadFileAsync(fl.FilePath, photoStream);
-
-                Thread.Sleep(75);
-
-                photoStream.Close();
-
-                Image<Rgba32> img = Image.Load<Rgba32>("newphotos.png");
-
-                //img.Mutate(x => x.Resize(img.Width * Configuration.ResizerValue, img.Height * Configuration.ResizerValue));
-
-                Console.WriteLine("Size before Mutate: Width - {0}, Height - {1}", img.Width, img.Height);
-
-                if (img.Width < 400 || img.Height < 400)
-                {
-                    int w = 512 - img.Width;
-                    int h = 512 - img.Height;
-                    int bigger = h;
-                    if (w > h) bigger = w;
-                    img.Mutate(x => x.Resize(img.Width + bigger, img.Height + bigger));
-                }
-                else
-                {
-                    img.Mutate(x => x.Resize((int)(img.Width*1.5), (int)(img.Height*1.5)));
-                }
-                Console.WriteLine("Size after Mutate: Width - {0}, Height - {1}", img.Width, img.Height);
-
-
-                //img.Mutate(x => x.Resize(512, 512));
-
-                img.SaveAsPng("newphotos.png");
-
-                caption = message.Caption;
-
-                if (caption != null)
-                {
-                    if (caption.IndexOf("\n") != -1)
-                    {
-                        topCaption = caption.Substring(0, caption.IndexOf("\n"));
-
-                        bottomCaption = caption.Substring(caption.IndexOf("\n") + 1);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Number of captions equals 1");
-                        topCaption = caption;
-                        bottomCaption = "";
-                        numOfCaptions = 1;
-                    }
-
-                }
-                else
-                {
-                    topCaption = "Не пишите длинный текст";
-
-                    bottomCaption = "Он не вмещается";
-                }
-
-
-                CreateDemotivator(topCaption, bottomCaption, numOfCaptions);
-
-                Console.WriteLine("Demotivator created!");
-
-                filePath = "";
-                jsonResponse = "";
-
-                
-
-                FileStream fileStream = new FileStream("DemotivatorBotResult.png", FileMode.Open);
-
-                InputOnlineFile ResultFile = new InputOnlineFile(fileStream, "result.png");
-
-                
-                Console.WriteLine("File is ready for uploading");
-
-                await botClient.SendPhotoAsync(
-                    chatId: message.Chat.Id,
-                    ResultFile
-                    
-                    );
-                Console.WriteLine("Message sended(async)");
-                fileStream.Close();
-                
+                PrepearePicture(message.Photo, message.Caption, botClient, message.Chat.Id);
             }
+        }
+
+        public static async void PrepearePicture(PhotoSize[] photoSize, string messageCaption, TelegramBotClient botClient, ChatId messageChatId)
+        {
+            
+
+
+            FileStream photoStream = new FileStream("newphotos.png", FileMode.Create);
+
+            Telegram.Bot.Types.File fl = await botClient.GetFileAsync(photoSize[photoSize.Length - 1].FileId);
+
+            await botClient.DownloadFileAsync(fl.FilePath, photoStream);
+
+            Thread.Sleep(75);
+
+            photoStream.Close();
+
+            Image<Rgba32> img = Image.Load<Rgba32>("newphotos.png");
+
+            //img.Mutate(x => x.Resize(img.Width * Configuration.ResizerValue, img.Height * Configuration.ResizerValue));
+
+            Console.WriteLine("Size before Mutate: Width - {0}, Height - {1}", img.Width, img.Height);
+
+            if (img.Width < 400 || img.Height < 400)
+            {
+                int w = 512 - img.Width;
+                int h = 512 - img.Height;
+                int bigger = h;
+                if (w > h) bigger = w;
+                img.Mutate(x => x.Resize(img.Width + bigger, img.Height + bigger));
+            }
+            else
+            {
+                img.Mutate(x => x.Resize((int)(img.Width * 1.5), (int)(img.Height * 1.5)));
+            }
+            Console.WriteLine("Size after Mutate: Width - {0}, Height - {1}", img.Width, img.Height);
+
+
+            //img.Mutate(x => x.Resize(512, 512));
+
+            img.SaveAsPng("newphotos.png");
+
+            caption = messageCaption;
+
+            if (caption != null)
+            {
+                if (caption.IndexOf("\n") != -1)
+                {
+                    topCaption = caption.Substring(0, caption.IndexOf("\n"));
+
+                    bottomCaption = caption.Substring(caption.IndexOf("\n") + 1);
+                }
+                else
+                {
+                    Console.WriteLine("Number of captions equals 1");
+                    topCaption = caption;
+                    bottomCaption = "";
+                    numOfCaptions = 1;
+                }
+
+            }
+            else
+            {
+                topCaption = "Не пишите длинный текст";
+
+                bottomCaption = "Он не вмещается";
+            }
+
+
+            CreateDemotivator(topCaption, bottomCaption, numOfCaptions);
+
+            Console.WriteLine("Demotivator created!");
+
+            filePath = "";
+            jsonResponse = "";
+
+
+
+            FileStream fileStream = new FileStream("DemotivatorBotResult.png", FileMode.Open);
+
+            InputOnlineFile ResultFile = new InputOnlineFile(fileStream, "result.png");
+
+
+            Console.WriteLine("File is ready for uploading");
+
+            await botClient.SendPhotoAsync(
+                chatId: messageChatId,
+                ResultFile
+                );
+            Console.WriteLine("Message sended(async)");
+            fileStream.Close();
 
             State = 0;
             
         }
 
-        public static async void CreateDemotivator(string topCaption, string bottomCaption = null, int captions = 2)
+    public static async void CreateDemotivator(string topCaption, string bottomCaption = null, int captions = 2)
         {
 
             Image<Rgba32> originalImage = Image.Load<Rgba32>("newphotos.png");
