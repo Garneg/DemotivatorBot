@@ -465,9 +465,9 @@ namespace DemotivatorBot
             switch (content)
             {
                 case "advantages":
-                    botClient.SendTextMessageAsync(
+                    await botClient.SendTextMessageAsync(
                         chatId: callbackQueryEvent.CallbackQuery.Message.Chat.Id,
-                        text: 
+                        text: Configuration.advantagesText
                         );
                     break;
             }
