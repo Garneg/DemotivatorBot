@@ -461,6 +461,8 @@ namespace DemotivatorBot
          
         public static async void CallbackQueryReceived(object sender, CallbackQueryEventArgs callbackQueryEvent)
         {
+            await botClient.AnswerCallbackQueryAsync(callbackQueryEvent.CallbackQuery.Id);
+
             string content = callbackQueryEvent.CallbackQuery.Data;
 
             switch (content)
@@ -468,17 +470,18 @@ namespace DemotivatorBot
                 case "advantages":
                     await botClient.SendTextMessageAsync(
                         chatId: callbackQueryEvent.CallbackQuery.Message.Chat.Id,
-                        text: Configuration.advantagesText
+                        text: Configuration.advantagesText,
+                        parseMode: ParseMode.Markdown
                         );
                     break;
                 case "help":
                     await botClient.SendTextMessageAsync(
                         chatId: callbackQueryEvent.CallbackQuery.Message.Chat.Id,
-                        text: Configuration.helpText
+                        text: Configuration.helpText, 
+                        parseMode: ParseMode.MarkdownV2
                         );
                     break;
             }
-            await botClient.AnswerCallbackQueryAsync(callbackQueryEvent.CallbackQuery.Id);
         }
 
     }
