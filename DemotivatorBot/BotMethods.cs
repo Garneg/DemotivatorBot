@@ -471,6 +471,7 @@ namespace DemotivatorBot
                         );
                     break;
             }
+            await botClient.AnswerCallbackQueryAsync(callbackQueryEvent.CallbackQuery.Id);
         }
 
     }
