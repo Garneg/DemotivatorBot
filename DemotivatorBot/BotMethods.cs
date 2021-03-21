@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.IO;
 using System.Net;
 using System.Linq;
@@ -26,14 +27,11 @@ namespace DemotivatorBot
 {
     class BotMethods
     {
+        public static string[] captions;
         public static bool isReply;
         public static int State = 0;
         public static Queue<Message> messagesQueue = new Queue<Message>();
         public static int numOfCaptions = 2;
-        public static string caption;
-        public static string topCaption;
-        public static string bottomCaption;
-        public static string filePath;
         public static FontCollection fontCollection = new FontCollection();
         public static FontFamily family = fontCollection.Install("C:/SavedPictures/Times.ttf");
         public static TelegramBotClient botClient;
@@ -115,6 +113,7 @@ namespace DemotivatorBot
 
             if (message.Type == MessageType.Photo)
             {
+                Console.WriteLine("\nPICTURE RECEIVED!!");
                 await botClient.SendChatActionAsync(
                     chatId: message.Chat.Id,
                     chatAction: ChatAction.UploadPhoto
@@ -133,6 +132,8 @@ namespace DemotivatorBot
             await botClient.DownloadFileAsync(fl.FilePath, photoStream);
 
             Thread.Sleep(75);
+
+            Console.WriteLine("\nPICTURE DOWNLOADED!!\n");
 
             photoStream.Close();
 
@@ -159,36 +160,30 @@ namespace DemotivatorBot
 
             img.SaveAsPng("newphotos.png");
 
-            caption = messageCaption;
+            
 
-            if (caption != null)
+            
+
+            if (messageCaption == null)
             {
-                if (caption.IndexOf("\n") != -1)
-                {
-                    topCaption = caption.Substring(0, caption.IndexOf("\n"));
 
-                    bottomCaption = caption.Substring(caption.IndexOf("\n") + 1);
-                }
-                else
+                captions = new string[]
                 {
-                    Console.WriteLine("Number of captions equals 1");
-                    topCaption = caption;
-                    bottomCaption = "";
-                    numOfCaptions = 1;
-                }
+
+                    "Не пишите длинный текст",
+                    "Он не вмещается"
+
+                };
 
             }
             else
             {
-                topCaption = "Не пишите длинный текст";
-
-                bottomCaption = "Он не вмещается";
+                captions = await GetCaptions(messageCaption);
             }
 
+            CreateDemotivator(captions[0], captions[1], numOfCaptions);
 
-            CreateDemotivator(topCaption, bottomCaption, numOfCaptions);
-
-            Console.WriteLine("Demotivator created!");
+            Console.WriteLine("\nDemotivator created!\n");
 
             FileStream fileStream = new FileStream("DemotivatorBotResult.png", FileMode.Open);
 
@@ -484,5 +479,26 @@ namespace DemotivatorBot
             }
         }
 
+        public static async Task<string[]> GetCaptions(string caption)
+        {
+            string[] cap;
+            if (caption.IndexOf("\n") != -1)
+            {
+                cap = new string[]
+                {
+                caption.Substring(0, caption.IndexOf("\n")),
+
+                caption.Substring(caption.IndexOf("\n") + 1)
+                };
+            }
+            else
+            {
+                Console.WriteLine("Number of captions equals 1");
+                cap = new string[] { caption, "" };
+                numOfCaptions = 1;
+            }
+
+            return cap;
+        }
     }
 }

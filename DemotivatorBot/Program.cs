@@ -28,10 +28,10 @@ namespace DemotivatorBot
             Bot.OnCallbackQuery += BotMethods.CallbackQueryReceived;
 
             Bot.StartReceiving();
-            
-            Console.WriteLine("Write a line to stop bot from receiving:");
 
             BotMethods.AddToQueue();
+
+            Console.WriteLine("Write a line to stop bot from receiving:");
 
             Console.ReadLine();
 
