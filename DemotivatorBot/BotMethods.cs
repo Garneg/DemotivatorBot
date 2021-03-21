@@ -27,6 +27,7 @@ namespace DemotivatorBot
 {
     class BotMethods
     {
+        public static double renderTime;
         public static string[] captions;
         public static bool isReply;
         public static int State = 0;
@@ -41,6 +42,10 @@ namespace DemotivatorBot
             Message message = e.Message;
 
             messagesQueue.Enqueue(message);
+
+            renderTime = Convert.ToDouble((DateTime.Now.Second + "," + DateTime.Now.Millisecond).ToString());
+
+            Console.WriteLine(renderTime);
 
         }
         public static async void MessageManipulations(Message message)
@@ -124,7 +129,20 @@ namespace DemotivatorBot
 
         public static async void PrepearePicture(PhotoSize[] photoSize, string messageCaption, TelegramBotClient botClient, ChatId messageChatId)
         {
-            
+
+            new Thread(new ThreadStart(async() =>
+            {
+                if (messageCaption != null)
+                {
+                    captions = await GetCaptions(messageCaption);
+                }
+                else
+                {
+                    captions = await GetCaptions("Не пишите длинный текст\nОн не вмещается");
+
+                }
+            })).Start();
+
             FileStream photoStream = new FileStream("newphotos.png", FileMode.Create);
 
             Telegram.Bot.Types.File fl = await botClient.GetFileAsync(photoSize[photoSize.Length - 1].FileId);
@@ -160,27 +178,6 @@ namespace DemotivatorBot
 
             img.SaveAsPng("newphotos.png");
 
-            
-
-            
-
-            if (messageCaption == null)
-            {
-
-                captions = new string[]
-                {
-
-                    "Не пишите длинный текст",
-                    "Он не вмещается"
-
-                };
-
-            }
-            else
-            {
-                captions = await GetCaptions(messageCaption);
-            }
-
             CreateDemotivator(captions[0], captions[1], numOfCaptions);
 
             Console.WriteLine("\nDemotivator created!\n");
@@ -196,8 +193,11 @@ namespace DemotivatorBot
                 chatId: messageChatId,
                 ResultFile
                 );
-            Console.WriteLine("Message sended(async)");
+            renderTime = Convert.ToDouble((DateTime.Now.Second + "," + DateTime.Now.Millisecond).ToString()) - renderTime;
+            Console.WriteLine("Message sended(async) Time taken: {0:F}", renderTime);
             fileStream.Close();
+
+            numOfCaptions = 2;
 
             State = 0;
             
