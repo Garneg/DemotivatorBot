@@ -31,7 +31,7 @@ namespace DemotivatorBot
 
             BotMethods.AddToQueue();
 
-            Console.WriteLine("Write a line to stop bot from receiving:");
+            Console.WriteLine("Write a line to stop bot from receiving:"); //Не работает!!
 
             Console.ReadLine();
 
