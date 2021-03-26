@@ -27,7 +27,11 @@ namespace DemotivatorBot
             Bot.OnMessage += BotMethods.MessageReceived;
             Bot.OnCallbackQuery += BotMethods.CallbackQueryReceived;
 
+            Console.WriteLine("//Message handlers setup done");
+
             Bot.StartReceiving();
+
+            Console.WriteLine("//Bot started");
 
             BotMethods.AddToQueue();
 

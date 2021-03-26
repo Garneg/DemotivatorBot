@@ -97,7 +97,7 @@ namespace DemotivatorBot
                         {
                             await botClient.SendTextMessageAsync(
                                 chatId: message.Chat.Id,
-                                text: "Пришлите картинку с подписью, чтобы создать демотиватор!"
+                                text: Configuration.defaultAnswer
                                 );
                         }
                         break;
@@ -113,7 +113,7 @@ namespace DemotivatorBot
                     PrepearePicture(message.ReplyToMessage.Photo, message.Text, botClient, message.Chat.Id);
                     Console.WriteLine(message.Text);
                 }
-
+                State = 0;
             }
 
             if (message.Type == MessageType.Photo)
@@ -213,7 +213,8 @@ namespace DemotivatorBot
 
             int Width;
             int Height;
-            int Thickness = averagePoint / 30;
+            int Thickness = averagePoint / 25;
+            int Margin = (Thickness / 3) * 5;
 
             if (captions == 2)
             {
@@ -243,13 +244,13 @@ namespace DemotivatorBot
 
                 SetImageToAnother(originalImage, ref resultImage, averagePoint, minimalPoint);
 
-                DrawSolidColorRectangle(ref resultImage, averagePoint - Thickness * 2, minimalPoint - Thickness * 2, Thickness, originalImage.Height + Thickness * 4, new Rgba32(255, 255, 255));
+                DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint - Margin, Thickness, originalImage.Height + Margin * 2, new Rgba32(255, 255, 255));
 
-                DrawSolidColorRectangle(ref resultImage, averagePoint - Thickness * 2, minimalPoint - Thickness * 2, originalImage.Width + Thickness * 4, Thickness, new Rgba32(255, 255, 255));
+                DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint - Margin, originalImage.Width + Margin * 2  + Thickness, Thickness, new Rgba32(255, 255, 255));
 
-                DrawSolidColorRectangle(ref resultImage, Width - averagePoint + Thickness, minimalPoint - Thickness * 2, Thickness, originalImage.Height + Thickness * 4, new Rgba32(255, 255, 255));
+                DrawSolidColorRectangle(ref resultImage, Width - averagePoint + Margin, minimalPoint - Margin, Thickness, originalImage.Height + Margin * 2 + Thickness, new Rgba32(255, 255, 255));
 
-                DrawSolidColorRectangle(ref resultImage, averagePoint - Thickness * 2, minimalPoint + originalImage.Height + Thickness, originalImage.Width + Thickness * 4, Thickness, new Rgba32(255, 255, 255));
+                DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint + originalImage.Height + Margin, originalImage.Width + Margin * 2 + Thickness, Thickness, new Rgba32(255, 255, 255));
 
 
 
@@ -317,13 +318,13 @@ namespace DemotivatorBot
 
                 SetImageToAnother(originalImage, ref resultImage, averagePoint, minimalPoint);
 
-                DrawSolidColorRectangle(ref resultImage, averagePoint - Thickness * 2, minimalPoint - Thickness * 2, Thickness, originalImage.Height + Thickness * 4, new Rgba32(255, 255, 255));
+                DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint - Margin, Thickness, originalImage.Height + Margin * 2, new Rgba32(255, 255, 255));
 
-                DrawSolidColorRectangle(ref resultImage, averagePoint - Thickness * 2, minimalPoint - Thickness * 2, originalImage.Width + Thickness * 4, Thickness, new Rgba32(255, 255, 255));
+                DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint - Margin, originalImage.Width + Margin * 2 + Thickness, Thickness, new Rgba32(255, 255, 255));
 
-                DrawSolidColorRectangle(ref resultImage, Width - averagePoint + Thickness, minimalPoint - Thickness * 2, Thickness, originalImage.Height + Thickness * 4, new Rgba32(255, 255, 255));
+                DrawSolidColorRectangle(ref resultImage, Width - averagePoint + Margin, minimalPoint - Margin, Thickness, originalImage.Height + Margin * 2 + Thickness, new Rgba32(255, 255, 255));
 
-                DrawSolidColorRectangle(ref resultImage, averagePoint - Thickness * 2, minimalPoint + originalImage.Height + Thickness, originalImage.Width + Thickness * 4, Thickness, new Rgba32(255, 255, 255));
+                DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint + originalImage.Height + Margin, originalImage.Width + Margin * 2 + Thickness, Thickness, new Rgba32(255, 255, 255));
 
                 RenderText(topCaption, originalImage.Width, minimalPoint);
 
