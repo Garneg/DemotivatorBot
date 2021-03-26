@@ -4,6 +4,7 @@ using System.IO;
 using System.Drawing;
 using System.Text;
 using Telegram.Bot;
+using System.Threading;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types;
 using Telegram.Bot.Requests;
@@ -33,11 +34,44 @@ namespace DemotivatorBot
 
             Console.WriteLine("//Bot started");
 
-            BotMethods.AddToQueue();
+            Thread M = new Thread(new ThreadStart(() => { BotMethods.AddToQueue(); }));
 
-            Console.WriteLine("Write a line to stop bot from receiving:"); //Не работает!!
+            M.Start();
 
-            Console.ReadLine();
+
+            for (; ; )
+            {
+                Console.WriteLine("Write \"/stop\" to stop bot:"); //Не работает!!
+
+
+                Stop:
+                string answer = Console.ReadLine();
+
+                if (answer.ToLower() == "/stop")
+                {
+                    BotMethods.State = 1;
+                    Console.WriteLine("Bot has stopped!");
+                }
+                else
+                {
+                    goto Stop;
+                }
+
+                Console.WriteLine("To run a bot write \"/run\":");
+
+                Run:
+                answer = Console.ReadLine();
+
+                if (answer.ToLower() == "/run")
+                {
+                    BotMethods.State = 0 ;
+                }
+                else
+                {
+                    goto Run;
+                }
+
+            }
 
             Bot.StopReceiving();
 
