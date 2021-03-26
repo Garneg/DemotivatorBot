@@ -34,7 +34,7 @@ namespace DemotivatorBot
         public static Queue<Message> messagesQueue = new Queue<Message>();
         public static int numOfCaptions = 2;
         public static FontCollection fontCollection = new FontCollection();
-        public static FontFamily family = fontCollection.Install("C:/SavedPictures/Times.ttf");
+        public static FontFamily family = fontCollection.Install("Times.ttf");
         public static TelegramBotClient botClient;
         public static void MessageReceived(object sender, MessageEventArgs e)
         {
