@@ -58,7 +58,7 @@ namespace DemotivatorBot
 
         });
 
-        private static string DefaultAnswer = "Пришли картинку с подписью, чтобы создать демотиватор! " + "\n" +
+        private static string DefaultAnswer = "Отправь картинку с подписью, чтобы создать демотиватор! " + "\n" +
             "Нужна помощь? Нажми --> /help";
 
         public static string defaultAnswer

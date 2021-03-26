@@ -172,7 +172,6 @@ namespace DemotivatorBot
                 {
                     img.Mutate(j => j.Resize(500 * relationSize, 500));
                 }
-               
             }
             Console.WriteLine("Size after Mutate: Width - {0}, Height - {1}", img.Width, img.Height);
 
@@ -187,7 +186,7 @@ namespace DemotivatorBot
             InputOnlineFile ResultFile = new InputOnlineFile(fileStream, "result.png");
 
 
-            Console.WriteLine("File is ready for uploading");
+            Console.WriteLine("File is ready for uploading {0:F}", (Convert.ToDouble((DateTime.Now.Second + "," + DateTime.Now.Millisecond).ToString()) - renderTime));
 
             await botClient.SendPhotoAsync(
                 chatId: messageChatId,
@@ -246,7 +245,7 @@ namespace DemotivatorBot
 
                 DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint - Margin, Thickness, originalImage.Height + Margin * 2, new Rgba32(255, 255, 255));
 
-                DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint - Margin, originalImage.Width + Margin * 2  + Thickness, Thickness, new Rgba32(255, 255, 255));
+                DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint - Margin - Thickness, originalImage.Width + Margin * 2 + Thickness * 2, Thickness, new Rgba32(255, 255, 255));
 
                 DrawSolidColorRectangle(ref resultImage, Width - averagePoint + Margin, minimalPoint - Margin, Thickness, originalImage.Height + Margin * 2 + Thickness, new Rgba32(255, 255, 255));
 
@@ -320,10 +319,10 @@ namespace DemotivatorBot
 
                 DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint - Margin, Thickness, originalImage.Height + Margin * 2, new Rgba32(255, 255, 255));
 
-                DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint - Margin, originalImage.Width + Margin * 2 + Thickness, Thickness, new Rgba32(255, 255, 255));
+                DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint - Margin - Thickness, originalImage.Width + Margin * 2 + Thickness, Thickness, new Rgba32(255, 255, 255));
 
                 DrawSolidColorRectangle(ref resultImage, Width - averagePoint + Margin, minimalPoint - Margin, Thickness, originalImage.Height + Margin * 2 + Thickness, new Rgba32(255, 255, 255));
-
+                
                 DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint + originalImage.Height + Margin, originalImage.Width + Margin * 2 + Thickness, Thickness, new Rgba32(255, 255, 255));
 
                 RenderText(topCaption, originalImage.Width, minimalPoint);
