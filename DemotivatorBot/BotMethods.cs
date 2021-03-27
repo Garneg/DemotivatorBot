@@ -34,7 +34,8 @@ namespace DemotivatorBot
         public static Queue<Message> messagesQueue = new Queue<Message>();
         public static int numOfCaptions = 2;
         public static FontCollection fontCollection = new FontCollection();
-        public static FontFamily family = fontCollection.Install("Times.ttf");
+        public static FontFamily familyTimes = fontCollection.Install("Times.ttf");
+        public static FontFamily familyArial = fontCollection.Install("Arial.ttf");
         public static TelegramBotClient botClient;
         public static void MessageReceived(object sender, MessageEventArgs e)
         {
@@ -46,6 +47,15 @@ namespace DemotivatorBot
             renderTime = Convert.ToDouble((DateTime.Now.Second + "," + DateTime.Now.Millisecond).ToString());
 
             Console.WriteLine(renderTime);
+
+
+            if ((message.Type == MessageType.Photo) && (messagesQueue.Count > 0))
+            {
+                botClient.SendTextMessageAsync(
+                message.Chat.Id,
+                $"Твой демотиватор добавлен в очередь, впереди ещё {messagesQueue.Count}, подожди немного ⏳"
+                );
+            }
 
         }
         public static async void MessageManipulations(Message message)
@@ -92,6 +102,14 @@ namespace DemotivatorBot
                             text: Configuration.infoText
                             );
                         break;
+
+                    case "/stopbot":
+                        if (message.From.Id == 1113634091)
+                        {
+                            botClient.StopReceiving();
+                            Console.WriteLine("Stop");
+                        }
+                        break;
                     default:
                         if (message.ReplyToMessage == null)
                         {
@@ -130,17 +148,17 @@ namespace DemotivatorBot
         public static async void PrepearePicture(PhotoSize[] photoSize, string messageCaption, TelegramBotClient botClient, ChatId messageChatId)
         {
 
-            new Thread(new ThreadStart(async() =>
+            new Thread(new ThreadStart(async () =>
             {
-                if (messageCaption != null)
-                {
-                    captions = await GetCaptions(messageCaption);
-                }
-                else
-                {
-                    captions = await GetCaptions("Не пишите длинный текст\nОн не вмещается");
-
-                }
+            if (messageCaption != null)
+            {
+                captions = await GetCaptions(messageCaption);
+            }
+            else
+            {
+                    string[] randomCaptions = System.IO.File.ReadAllLines("CaptionsDictionary.txt", Encoding.UTF8);
+                    captions = await GetCaptions(randomCaptions[new Random().Next(1, randomCaptions.Length-1)]);
+            }
             })).Start();
 
             FileStream photoStream = new FileStream("newphotos.png", FileMode.Create);
@@ -218,7 +236,7 @@ namespace DemotivatorBot
             if (captions == 2)
             {
                 Width = originalImage.Width + (averagePoint * 2);
-                Height = originalImage.Height + minimalPoint + (averagePoint * 3);
+                Height = originalImage.Height + minimalPoint * 2 + (averagePoint * 2);
 
                 
 
@@ -251,25 +269,17 @@ namespace DemotivatorBot
 
                 DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint + originalImage.Height + Margin, originalImage.Width + Margin * 2 + Thickness, Thickness, new Rgba32(255, 255, 255));
 
+                
+                
+                RenderText(topCaption, originalImage.Width + averagePoint, minimalPoint, familyTimes);
 
+                SetImageToAnother(Image.Load<Rgba32>("RenderedImageSharpText.png"), ref resultImage, averagePoint / 2, originalImage.Height + minimalPoint + (averagePoint / 3));
 
-                if (bottomCaption == null)
-                {
-                    RenderText(topCaption, originalImage.Width + averagePoint, minimalPoint);
+                RenderText(bottomCaption, originalImage.Width + averagePoint, (int)(minimalPoint * 0.6), familyArial);
 
-                    SetImageToAnother(Image.Load<Rgba32>("RenderedImageSharpText.png"), ref resultImage, averagePoint / 2, originalImage.Height + 10 + minimalPoint + (averagePoint / 2));
-                }
-                if (bottomCaption != null && topCaption != null)
-                {
-                    RenderText(topCaption, originalImage.Width + averagePoint, minimalPoint);
+                SetImageToAnother(Image.Load<Rgba32>("RenderedImageSharpText.png"), ref resultImage, averagePoint / 2, originalImage.Height + minimalPoint * 3 - Thickness - Margin * 2);
 
-                    SetImageToAnother(Image.Load<Rgba32>("RenderedImageSharpText.png"), ref resultImage, averagePoint / 2, originalImage.Height + 10 + minimalPoint + (averagePoint / 2));
-
-                    RenderText(bottomCaption, originalImage.Width + averagePoint, (int)(minimalPoint * 0.75));
-
-                    SetImageToAnother(Image.Load<Rgba32>("RenderedImageSharpText.png"), ref resultImage, averagePoint / 2, originalImage.Height + 10 + minimalPoint + (int)(averagePoint * 1.5));
-
-                }
+                
 
                 if (resultImage.Width > 2500 || resultImage.Height > 2500)
                 {
@@ -325,10 +335,10 @@ namespace DemotivatorBot
                 
                 DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint + originalImage.Height + Margin, originalImage.Width + Margin * 2 + Thickness, Thickness, new Rgba32(255, 255, 255));
 
-                RenderText(topCaption, originalImage.Width, minimalPoint);
+                RenderText(topCaption, originalImage.Width, minimalPoint, familyTimes);
 
-                SetImageToAnother(Image.Load<Rgba32>("RenderedImageSharpText.png"), ref resultImage, averagePoint, originalImage.Height + 10 + minimalPoint + (averagePoint / 2));
-            
+                SetImageToAnother(Image.Load<Rgba32>("RenderedImageSharpText.png"), ref resultImage, averagePoint / 2, originalImage.Height + minimalPoint + (averagePoint / 3));
+
                 if (resultImage.Width > 2500 || resultImage.Height > 2500)
                 {
                     int TooBigWidth = resultImage.Width;
@@ -406,12 +416,10 @@ namespace DemotivatorBot
             }
         }
 
-        public static async void RenderText(string text, int maxWidth, int maxHeight)
+        public static async void RenderText(string text, int maxWidth, int maxHeight, FontFamily fontfamily)
         {
 
-            //family = fontCollection.Install("Symbola.ttf");
-
-            Font font = family.CreateFont(maxHeight);
+            Font font = fontfamily.CreateFont(maxHeight);
 
             Image<Rgba32> img = new Image<Rgba32>(maxWidth, maxHeight);
 
@@ -473,7 +481,7 @@ namespace DemotivatorBot
                     await botClient.SendTextMessageAsync(
                         chatId: callbackQueryEvent.CallbackQuery.Message.Chat.Id,
                         text: Configuration.helpText, 
-                        parseMode: ParseMode.MarkdownV2
+                        parseMode: ParseMode.Markdown
                         );
                     break;
             }
@@ -482,13 +490,13 @@ namespace DemotivatorBot
         public static async Task<string[]> GetCaptions(string caption)
         {
             string[] cap;
-            if (caption.IndexOf("\n") != -1)
+            if (caption.IndexOf(@"\n") != -1)
             {
                 cap = new string[]
                 {
-                caption.Substring(0, caption.IndexOf("\n")),
+                caption.Substring(0, caption.IndexOf(@"\n")),
 
-                caption.Substring(caption.IndexOf("\n") + 1)
+                caption.Substring(caption.IndexOf(@"\n") + 2)
                 };
             }
             else
