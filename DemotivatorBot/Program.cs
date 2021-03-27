@@ -34,14 +34,13 @@ namespace DemotivatorBot
 
             Console.WriteLine("//Bot started");
 
-            Thread M = new Thread(new ThreadStart(() => { BotMethods.AddToQueue(); }));
+            BotMethods.AddToQueue();
 
-            M.Start();
-
+            /*
 
             for (; ; )
             {
-                Console.WriteLine("Write \"/stop\" to stop bot:"); //Не работает!!
+                Console.WriteLine("Write \"/stop\" to stop bot:");
 
 
                 Stop:
@@ -49,7 +48,7 @@ namespace DemotivatorBot
 
                 if (answer.ToLower() == "/stop")
                 {
-                    BotMethods.State = 1;
+                    Bot.StopReceiving();
                     Console.WriteLine("Bot has stopped!");
                 }
                 else
@@ -62,9 +61,9 @@ namespace DemotivatorBot
                 Run:
                 answer = Console.ReadLine();
 
-                if (answer.ToLower() == "/run")
+                if (answer.ToLower() == "/start")
                 {
-                    BotMethods.State = 0 ;
+                    Bot.StopReceiving();
                 }
                 else
                 {
@@ -74,9 +73,9 @@ namespace DemotivatorBot
             }
 
             Bot.StopReceiving();
+            */
 
-            
-            
+
         }
     }
 }
