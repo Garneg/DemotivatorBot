@@ -339,7 +339,7 @@ namespace DemotivatorBot
                 
                 DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint + originalImage.Height + Margin, originalImage.Width + Margin * 2 + Thickness, Thickness, new Rgba32(255, 255, 255));
 
-                RenderText(topCaption, originalImage.Width, minimalPoint, familyTimes);
+                RenderText(topCaption, originalImage.Width + averagePoint, minimalPoint, familyTimes);
 
                 SetImageToAnother(Image.Load<Rgba32>("RenderedImageSharpText.png"), ref resultImage, averagePoint / 2, originalImage.Height + minimalPoint + (averagePoint / 3));
 
@@ -503,12 +503,22 @@ namespace DemotivatorBot
                 caption.Substring(caption.IndexOf(@"\n") + 2)
                 };
             }
+            if (caption.IndexOf("\n") != -1)
+            {
+                cap = new string[]
+                {
+                caption.Substring(0, caption.IndexOf("\n")),
+
+                caption.Substring(caption.IndexOf("\n") + 1)
+                };
+            }
             else
             {
                 Console.WriteLine("Number of captions equals 1");
                 cap = new string[] { caption, "" };
                 numOfCaptions = 1;
             }
+
 
             return cap;
         }
