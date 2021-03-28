@@ -211,6 +211,10 @@ namespace DemotivatorBot
                 ResultFile
                 );
             renderTime = Convert.ToDouble((DateTime.Now.Second + "," + DateTime.Now.Millisecond).ToString()) - renderTime;
+            if (renderTime < 0)
+            {
+                renderTime += 60;
+            }
             Console.WriteLine("Message sended(async) Time taken: {0:F}", renderTime);
             fileStream.Close();
 
