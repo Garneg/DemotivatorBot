@@ -239,7 +239,7 @@ namespace DemotivatorBot
             int Width;
             int Height;
             int Thickness = averagePoint / 25;
-            int Margin = (Thickness / 3) * 5;
+            int Margin = Thickness * 2;
 
             if (captions == 2)
             {
@@ -308,6 +308,8 @@ namespace DemotivatorBot
 
                 await resultImage.SaveAsPngAsync("DemotivatorBotResult.png");
 
+                Console.WriteLine(Margin);
+
             }
             else
             {
@@ -366,7 +368,7 @@ namespace DemotivatorBot
 
                 await resultImage.SaveAsPngAsync("DemotivatorBotResult.png");
 
-
+                Console.WriteLine(Margin);
 
             }
             

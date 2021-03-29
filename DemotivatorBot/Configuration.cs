@@ -33,8 +33,8 @@ namespace DemotivatorBot
         public static readonly string infoText = "Информация:" + "\n\n" +
             "Создатель - @senya_danfor" + "\n" +
             "Бот написан на языке C# с использованием:" + "\n" +
-            "SixLabors.ImageSharp - Библиотека для работы с картинками" + "\n" +
-            "Telegram Bot API - Официальная библиотека телеграм ботов" + "\n" +
+            "SixLabors.ImageSharp" + "\n" +
+            "Telegram Bot API" + "\n" +
             "\nВерсия 1.0.3"
             ;
 
