@@ -73,6 +73,10 @@ namespace DemotivatorBot
                     isReply = false;
                 }
             }
+            else
+            {
+                isReply = false;
+            }
             
 
             if (message.Type == MessageType.Text && message.Text != null)
@@ -493,7 +497,10 @@ namespace DemotivatorBot
 
         public static async Task<string[]> GetCaptions(string caption)
         {
+            
+            numOfCaptions = 1;
             string[] cap;
+            cap = new string[] { caption, "" };
             if (caption.IndexOf(@"\n") != -1)
             {
                 cap = new string[]
@@ -502,6 +509,7 @@ namespace DemotivatorBot
 
                 caption.Substring(caption.IndexOf(@"\n") + 2)
                 };
+                numOfCaptions = 2;
             }
             if (caption.IndexOf("\n") != -1)
             {
@@ -511,12 +519,12 @@ namespace DemotivatorBot
 
                 caption.Substring(caption.IndexOf("\n") + 1)
                 };
+                numOfCaptions = 2;
             }
-            else
+            if ((caption.IndexOf("\n") == -1 && (caption.IndexOf(@"\n") == -1)))
             {
                 Console.WriteLine("Number of captions equals 1");
-                cap = new string[] { caption, "" };
-                numOfCaptions = 1;
+               
             }
 
 
