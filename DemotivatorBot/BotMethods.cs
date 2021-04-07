@@ -101,7 +101,7 @@ namespace DemotivatorBot
 
                     case "/info":
                         await botClient.SendTextMessageAsync
-                            (
+                            ( 
                             chatId: message.Chat.Id,
                             text: Configuration.infoText
                             );
@@ -337,13 +337,15 @@ namespace DemotivatorBot
 
                 SetImageToAnother(originalImage, ref resultImage, averagePoint, minimalPoint);
 
+
                 DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint - Margin, Thickness, originalImage.Height + Margin * 2, new Rgba32(255, 255, 255));
 
-                DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint - Margin - Thickness, originalImage.Width + Margin * 2 + Thickness, Thickness, new Rgba32(255, 255, 255));
+                DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint - Margin - Thickness, originalImage.Width + Margin * 2 + Thickness * 2, Thickness, new Rgba32(255, 255, 255));
 
                 DrawSolidColorRectangle(ref resultImage, Width - averagePoint + Margin, minimalPoint - Margin, Thickness, originalImage.Height + Margin * 2 + Thickness, new Rgba32(255, 255, 255));
-                
+
                 DrawSolidColorRectangle(ref resultImage, averagePoint - Margin - Thickness, minimalPoint + originalImage.Height + Margin, originalImage.Width + Margin * 2 + Thickness, Thickness, new Rgba32(255, 255, 255));
+
 
                 RenderText(topCaption, originalImage.Width + averagePoint, minimalPoint, familyTimes);
 
@@ -490,8 +492,7 @@ namespace DemotivatorBot
                 case "help":
                     await botClient.SendTextMessageAsync(
                         chatId: callbackQueryEvent.CallbackQuery.Message.Chat.Id,
-                        text: Configuration.helpText, 
-                        parseMode: ParseMode.Markdown
+                        text: Configuration.helpText
                         );
                     break;
             }
